@@ -91,24 +91,24 @@ Yeh, I-C. "Modeling of Strength of High-Performance Concrete Using Artificial Ne
 url = 'https://raw.githubusercontent.com/jadhavgaurav/cement-composite-strength-prediction/refs/heads/main/concrete_data.csv'
 
 df = pd.read_csv(url)
-df.sample(frac = 1) # Shuffle Dataset
+print(df.sample(frac = 1)) # Shuffle Dataset
 
-df.columns
+print(df.columns)
 
-df.columns = df.columns.str.strip()
+print(df.columns = df.columns.str.strip())
 
 # Checking Data information and Missing Values if any...
 
-df.info()
+print(df.info())
 
 # Checking Descriptive Stattistics
-df.describe()
+print(df.describe())
 
 """## Based on above information, we find that the dataset is non normal distributed"""
 
 # Univariate Analysis (Custom Function)
 
-from collections import OrderedDict
+from collections import OrdeprintredDict
 
 stats = []
 for i in df.columns:
@@ -128,7 +128,7 @@ for i in df.columns:
     })
     stats.append(numerical_stats)
 report = pd.DataFrame(stats)
-report
+print(report)
 
 """## Univariate Analysis
 ### 1. Histograms & KDE Plots
@@ -252,8 +252,6 @@ plt.show()
 - Allow longer curing time to enhance strength.
 - Balance water-to-cement ratio to prevent strength reduction.
 """
-
-df.columns
 
 """# Feature Engineering"""
 
@@ -411,7 +409,7 @@ print(f"Original dataset size: {df.shape[0]}")
 print(f"Cleaned dataset size: {df_cleaned.shape[0]}")
 
 # Checking Column Names
-df_cleaned.columns
+print(df_cleaned.columns)
 
 # Split Data into X and y
 X = df_cleaned.drop(columns = ['concrete_compressive_strength']) # Independent Features
@@ -419,13 +417,13 @@ y = df_cleaned['concrete_compressive_strength'] # target Variable
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-X_train.shape, X.shape, y_train.shape, y.shape
+# X_train.shape, X.shape, y_train.shape, y.shape
 
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-X_train.max(), X_train.min()
+# X_train.max(), X_train.min()
 
 # X_train = pd.DataFrame(X_train, columns=X.columns)
 # plt.figure(figsize=(16, 12))
@@ -482,7 +480,7 @@ stats.probplot(residuals, dist="norm", plot=plt)
 plt.title("Q-Q Plot of Residuals - Random Forest")
 plt.show()
 
-y_pred_test.shape, residuals.shape
+# y_pred_test.shape, residuals.shape
 
 # Residuals vs. Fitted Plot
 plt.figure(figsize=(6,5))
