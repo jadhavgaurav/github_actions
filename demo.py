@@ -39,60 +39,12 @@ from tensorflow.keras import layers
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 # import keras_tuner as kt
-from tensorflow.keras.utils import plot_model
-from tensorflow.keras.models import load_model
-
-"""# Concrete Compressive Strength Dataset
-
-## Overview
-- **Source**: [UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength)
-- **Dataset Type**: Regression
-- **Number of Instances**: 1030
-- **Number of Attributes**: 9 input variables + 1 target variable
-- **Domain**: Civil Engineering, Material Science
-- **Objective**: Predict the compressive strength of concrete based on its composition and age.
-
-## Attribute Information
-| Column | Description | Unit |
-|---------|------------------------------|--------------|
-| Cement | Cement component | kg/m³ |
-| Blast Furnace Slag | Blast furnace slag component | kg/m³ |
-| Fly Ash | Fly ash component | kg/m³ |
-| Water | Water component | kg/m³ |
-| Superplasticizer | Superplasticizer additive | kg/m³ |
-| Coarse Aggregate | Coarse aggregate component | kg/m³ |
-| Fine Aggregate | Fine aggregate component | kg/m³ |
-| Age | Age of concrete samples | Days |
-| Compressive Strength | Target variable - Strength of concrete | MPa |
-
-## Dataset Characteristics
-- The dataset contains **continuous numerical features**.
-- The target variable (compressive strength) is influenced by **composition and age**.
-- No categorical features.
-
-## Applications
-- Predicting the strength of concrete for **construction quality control**.
-- Understanding the impact of different components on **material durability**.
-- Optimizing concrete composition for **stronger and cost-effective construction**.
-
-## Source & Citation
-Yeh, I-C. "Modeling of Strength of High-Performance Concrete Using Artificial Neural Networks." *Cement and Concrete Research*, Vol. 28, No. 12, pp. 1797-1808, 1998.
-
----
-**Next Steps:**
-- Load the dataset and check for missing values.
-- Perform **EDA** (Exploratory Data Analysis) to understand feature distributions.
-- Build regression models to predict compressive strength.
-
-"""
 
 # Import Dataset Using Pandas Function
 
-url = 'https://raw.githubusercontent.com/jadhavgaurav/cement-composite-strength-prediction/refs/heads/main/concrete_data.csv'
+url = "https://raw.githubusercontent.com/jadhavgaurav/cement-composite-strength-prediction/refs/heads/main/concrete_data.csv"
 
 df = pd.read_csv(url)
-
-
 
 # Outlier Detection using IQR method
 Q1 = df.quantile(0.25)
