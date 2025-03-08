@@ -39,12 +39,18 @@ from tensorflow.keras import layers
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 # import keras_tuner as kt
+from tensorflow.keras.utils import plot_model
+from tensorflow.keras.models import load_model
 
 # Import Dataset Using Pandas Function
 
 url = "https://raw.githubusercontent.com/jadhavgaurav/cement-composite-strength-prediction/refs/heads/main/concrete_data.csv"
 
 df = pd.read_csv(url)
+
+df['water_cement_ratio'] = df['water'] / df['cement']
+
+df['strength_age_ratio'] = df['concrete_compressive_strength'] / df['age']
 
 # Outlier Detection using IQR method
 Q1 = df.quantile(0.25)
@@ -57,43 +63,6 @@ upper_bound = Q3 + 1.5 * IQR
 
 # Detecting outliers
 outliers = ((df < lower_bound) | (df > upper_bound)).sum()
-
-# Display number of outliers per feature
-print("Number of outliers per feature:\n", outliers)
-
-# import pandas as pd
-
-# def cap_outliers_iqr(df, columns):
-#     """
-#     Caps outliers based on the IQR method for specified columns.
-
-#     Parameters:
-#         df (pd.DataFrame): The input DataFrame.
-#         columns (list): List of column names to check for outliers.
-
-#     Returns:
-#         pd.DataFrame: DataFrame with outliers capped.
-#     """
-#     df_capped = df.copy()
-#     for col in columns:
-#         Q1 = df[col].quantile(0.25)  # First Quartile (25th percentile)
-#         Q3 = df[col].quantile(0.75)  # Third Quartile (75th percentile)
-#         IQR = Q3 - Q1                # Interquartile Range
-#         lower_bound = Q1 - 1.5 * IQR  # Lower bound
-#         upper_bound = Q3 + 1.5 * IQR  # Upper bound
-
-#         # Cap values beyond the boundaries
-#         df_capped[col] = df[col].clip(lower=lower_bound, upper=upper_bound)
-
-#     return df_capped
-
-# # Cap outliers in specific columns
-# columns_to_cap = ['strength_age_ratio', 'age', 'water_cement_ratio']  # Replace with actual column names
-# df_capped = cap_outliers_iqr(df, columns_to_cap)
-
-# # Display number of rows before and after capping
-# print(f"Original dataset size: {df.shape[0]}")
-# print(f"Capped dataset size: {df_capped.shape[0]} (No rows removed, only values capped)")
 
 def remove_outliers_iqr(df, columns):
     """
