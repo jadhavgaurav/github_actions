@@ -52,6 +52,8 @@ df['water_cement_ratio'] = df['water'] / df['cement']
 
 df['strength_age_ratio'] = df['concrete_compressive_strength'] / df['age']
 
+df.drop(columns=['water', 'coarse_aggregate', 'fine_aggregate'], inplace=True)
+
 # Outlier Detection using IQR method
 Q1 = df.quantile(0.25)
 Q3 = df.quantile(0.75)
@@ -65,16 +67,7 @@ upper_bound = Q3 + 1.5 * IQR
 outliers = ((df < lower_bound) | (df > upper_bound)).sum()
 
 def remove_outliers_iqr(df, columns):
-    """
-    Removes outliers based on IQR method for specified columns.
-
-    Parameters:
-        df (pd.DataFrame): The input DataFrame.
-        columns (list): List of column names to check for outliers.
-
-    Returns:
-        pd.DataFrame: DataFrame with outliers removed.
-    """
+    
     df_clean = df.copy()
     for col in columns:
         Q1 = df[col].quantile(0.25)  # First Quartile (25th percentile)
@@ -97,7 +90,6 @@ df_cleaned = remove_outliers_iqr(df, columns_to_check)
 print(f"Original dataset size: {df.shape[0]}")
 print(f"Cleaned dataset size: {df_cleaned.shape[0]}")
 
-
 # Split Data into X and y
 X = df_cleaned.drop(columns = ['concrete_compressive_strength']) # Independent Features
 y = df_cleaned['concrete_compressive_strength'] # target Variable
@@ -109,17 +101,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
-
-# X_train.max(), X_train.min()
-
-# X_train = pd.DataFrame(X_train, columns=X.columns)
-# plt.figure(figsize=(16, 12))
-# for i, col in enumerate(X_train.columns):
-#     plt.subplot(4, 3, i+1)
-#     sns.histplot(df[col], kde=True, color='blue')
-#     plt.title(f"Distribution of {col}")
-# plt.tight_layout()
-# plt.show()
 
 # import RandomForest
 from sklearn.ensemble import RandomForestRegressor
