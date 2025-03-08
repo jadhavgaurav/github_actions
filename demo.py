@@ -91,240 +91,8 @@ Yeh, I-C. "Modeling of Strength of High-Performance Concrete Using Artificial Ne
 url = 'https://raw.githubusercontent.com/jadhavgaurav/cement-composite-strength-prediction/refs/heads/main/concrete_data.csv'
 
 df = pd.read_csv(url)
-print(df.sample(frac = 1)) # Shuffle Dataset
 
-print(df.columns)
 
-print(df.columns = df.columns.str.strip())
-
-# Checking Data information and Missing Values if any...
-
-print(df.info())
-
-# Checking Descriptive Stattistics
-print(df.describe())
-
-"""## Based on above information, we find that the dataset is non normal distributed"""
-
-# Univariate Analysis (Custom Function)
-
-from collections import OrdeprintredDict
-
-stats = []
-for i in df.columns:
-    numerical_stats = OrderedDict({
-        'Feature': i,
-        'Maximum' : df[i].max(),
-        'Minimum' : df[i].min(),
-        'Mean' : df[i].mean(),
-        'Median' : df[i].median(),
-        '25%': df[i].quantile(0.25),
-        '75%': df[i].quantile(0.75),
-        'Standard Deviation': df[i].std(),
-        'Variance': df[i].var(),
-        'Skewness': df[i].skew(),
-        'Kurtosis': df[i].kurt(),
-        'IQR' : df[i].quantile(0.75) - df[i].quantile(0.25)
-    })
-    stats.append(numerical_stats)
-report = pd.DataFrame(stats)
-print(report)
-
-"""## Univariate Analysis
-### 1. Histograms & KDE Plots
-"""
-
-plt.figure(figsize=(16, 12))
-for i, col in enumerate(df.columns):
-    plt.subplot(3, 3, i+1)
-    sns.histplot(df[col], kde=True, color='blue')
-    plt.title(f"Distribution of {col}")
-plt.tight_layout()
-plt.show()
-
-"""- Cement, water, and aggregates follow near-normal distributions, meaning these - materials have consistent usage across different mixes.
-- Blast furnace slag, fly ash, and superplasticizer are highly skewed, indicating - they are often absent or used in small amounts.
-- Age distribution suggests that most concrete samples are tested at an early - stage, while long-term strength is measured less frequently.
-- The strength distribution shows that most concrete samples achieve 30-50 MPa - compressive strength, which is a standard range for construction applications.
-
-### 2. Box Plots for Outlier Detection
-"""
-
-# Boxplot for detecting outliers in the dataset
-plt.figure(figsize=(14, 10))
-plot = 0
-for i in df.columns:
-    plot += 1
-    plt.subplot(4, 3, plot)
-    sns.boxenplot(df[i], color='violet')
-    plt.tight_layout()
-plt.show()
-
-"""# Bivariate Analysis
-#    4.1. Correlation Matrix
-"""
-
-df.corr()['concrete_compressive_strength']
-
-corr_matrix = df.corr()
-plt.figure(figsize=(10, 8))
-sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt=".2f", square=True)
-plt.title("Correlation Matrix")
-plt.show()
-
-"""1️⃣ Cement is the most critical factor (+0.50 correlation) – Higher cement content significantly increases concrete compressive strength.
-
-2️⃣ Superplasticizer improves strength (+0.37 correlation) – It enhances workability while reducing water, leading to stronger concrete.
-
-3️⃣ Age matters (+0.33 correlation) – As concrete cures over time, its strength increases.
-
-4️⃣ Water negatively affects strength (-0.29 correlation) – Excess water weakens concrete, reducing durability.
-
-5️⃣ Aggregates (fine & coarse) have minimal direct impact (~-0.16 correlation) – While essential for structure, their contribution to compressive strength is not significant.
-
-6️⃣ Fly ash and blast furnace slag have weak correlations (~0.13 to -0.11) – These materials don’t drastically impact strength but may influence durability and workability.
-
-7️⃣ Water and superplasticizer are strongly negatively correlated (-0.66) – More superplasticizer means less water is needed, leading to better strength.
-
-### 2. Pair Plot
-"""
-
-sns.pairplot(df)
-
-"""1️⃣ **Strong Positive Correlation:** <br>
-Cement vs. Compressive Strength → As cement content increases, strength significantly improves. <br>
-Age vs. Compressive Strength → Older concrete has higher strength due to curing effects.<br>
-
-2️⃣ **Negative Correlation:** <br>
-Water vs. Compressive Strength → Higher water content weakens concrete, leading to lower strength. <br>
-Water vs. Superplasticizer → More superplasticizer reduces water requirement, improving workability.<br>
-
-3️⃣ **Weak or No Significant Trends:** <br>
-Coarse & Fine Aggregate vs. Compressive Strength → No clear impact; aggregates provide structure but don’t directly boost strength. <br>
-Fly Ash & Blast Furnace Slag vs. Strength → Some contribution but not a strong determinant.<br>
-
-4️⃣ **Distribution Insights:** <br>
-Some variables (like water and superplasticizer) have skewed distributions, indicating possible outliers or non-uniform data distribution. <br>
-Compressive strength has a right-skewed distribution, meaning most values are lower, with fewer high-strength samples.
-
-- Maximize cement & curing time for better strength.
-- Reduce water & optimize superplasticizer for better workability and durability.
-- Reevaluate the role of aggregates in mix design.
-
-## Multivariate Analysis / Deeper Outlier Inspection
-### 1. Using a combination of features
-### For instance, we could see if certain features combined
-"""
-
-from mpl_toolkits.mplot3d import Axes3D
-target_col = 'concrete_compressive_strength'
-
-fig = plt.figure(figsize=(10, 7))
-ax = fig.add_subplot(111, projection='3d')
-
-# Choose three features for demonstration
-x_feat = 'cement'
-y_feat = 'water'
-z_feat = 'age'
-
-scatter = ax.scatter(df[x_feat],
-                     df[y_feat],
-                     df[z_feat],
-                     c=df[target_col],
-                     cmap='viridis',
-                     alpha=0.7)
-
-ax.set_xlabel(x_feat)
-ax.set_ylabel(y_feat)
-ax.set_zlabel(z_feat)
-cbar = fig.colorbar(scatter, ax=ax, shrink=0.5)
-cbar.set_label(target_col)
-plt.title("3D Scatter: Cement vs Water vs Age, colored by Strength")
-plt.show()
-
-"""1️⃣ Higher Cement = Higher Strength → More cement content generally results in stronger concrete. <br>
-2️⃣ Higher Age = Higher Strength → Older concrete (higher curing time) shows greater compressive strength. <br>
-3️⃣ Higher Water = Lower Strength → Excess water reduces strength, confirming the water-to-cement ratio's impact.
-
-📌 Conclusions for Optimization:
-
-- Increase cement while keeping water in check for higher strength.
-- Allow longer curing time to enhance strength.
-- Balance water-to-cement ratio to prevent strength reduction.
-"""
-
-"""# Feature Engineering"""
-
-# 1. Water-to-Cement Ratio (w/c Ratio)
-# The ratio of water to cement significantly influences concrete strength.
-
-df['water_cement_ratio'] = df['water'] / df['cement']
-
-df['strength_age_ratio'] = df['concrete_compressive_strength'] / df['age']
-
-new_features = ['water_cement_ratio', 'strength_age_ratio']
-
-"""## Variance Inflation Factor"""
-
-from statsmodels.stats.outliers_influence import variance_inflation_factor
-import statsmodels.api as sm  # Importing statsmodels
-
-X = df.drop(columns='concrete_compressive_strength')  # Selecting only independent variables
-
-# Add a small constant to avoid division errors
-X = X + 1e-10
-
-# Compute VIF for each feature
-vif_data = pd.DataFrame()
-vif_data["Feature"] = X.columns
-vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
-
-# Display VIF values
-print(vif_data)
-
-"""### We will drop the features with High VIF(variance-inflation-factor) as they impact model performance"""
-
-df.drop(columns=['water', 'coarse_aggregate', 'fine_aggregate'], inplace=True)
-
-from statsmodels.stats.outliers_influence import variance_inflation_factor
-import statsmodels.api as sm  # Importing statsmodels
-
-X = df.drop(columns='concrete_compressive_strength')  # Selecting only independent variables
-
-# Add a small constant to avoid division errors
-X = X + 1e-10
-
-# Compute VIF for each feature
-vif_data = pd.DataFrame()
-vif_data["Feature"] = X.columns
-vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
-
-# Display VIF values
-print(vif_data)
-
-"""VIF for all the features is less than 10, So the features will lead to good model performance"""
-
-corr_matrix = df.corr()
-plt.figure(figsize=(10, 8))
-sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', fmt=".2f", square=True)
-plt.title("Correlation Matrix")
-plt.show()
-
-"""1. Correlation Analysis:
-- **Strong Positive Correlations:**
-
-- Cement vs. Concrete Compressive Strength (0.50): More cement leads to stronger concrete.
-- Superplasticizer vs. Concrete Compressive Strength (0.37): Superplasticizers improve concrete strength.
-- Age vs. Concrete Compressive Strength (0.33): Strength increases with curing time.
-
-- **Strong Negative Correlations:**
-
-- Water-Cement Ratio vs. Concrete Compressive Strength (-0.50): More water weakens the concrete.
-- Water-Cement Ratio vs. Cement (-0.88): Higher cement reduces the water-cement ratio, indicating an inverse relationship.
-- Strength-Age Ratio vs. Age (-0.40): As concrete ages, the ratio of strength gain per unit time decreases.
-
-# Handling Outliers
-"""
 
 # Outlier Detection using IQR method
 Q1 = df.quantile(0.25)
@@ -408,8 +176,6 @@ df_cleaned = remove_outliers_iqr(df, columns_to_check)
 print(f"Original dataset size: {df.shape[0]}")
 print(f"Cleaned dataset size: {df_cleaned.shape[0]}")
 
-# Checking Column Names
-print(df_cleaned.columns)
 
 # Split Data into X and y
 X = df_cleaned.drop(columns = ['concrete_compressive_strength']) # Independent Features
@@ -474,22 +240,6 @@ plt.show()
 
 import scipy.stats as stats
 
-# Q-Q Plot for Normality Check
-plt.figure(figsize=(6,5))
-stats.probplot(residuals, dist="norm", plot=plt)
-plt.title("Q-Q Plot of Residuals - Random Forest")
-plt.show()
-
-# y_pred_test.shape, residuals.shape
-
-# Residuals vs. Fitted Plot
-plt.figure(figsize=(6,5))
-plt.scatter(y_pred_test, residuals, alpha=0.5)
-plt.axhline(y=0, color='r', linestyle='--')
-plt.xlabel("Fitted Values (Predicted)")
-plt.ylabel("Residuals")
-plt.title("Residuals vs Fitted Values - Random Forest")
-plt.show()
 
 """# Artifical Neural Network Model training"""
 
@@ -526,13 +276,6 @@ history = model_ann.fit(X_train, y_train, epochs=200, batch_size=16, validation_
 
 model_ann.summary()
 
-"""## Model Training Curves"""
-
-hist = model_ann.history.history
-hist = pd.DataFrame(hist)
-hist.plot()
-plt.title('Model Metrics')
-plt.show()
 
 y_pred_train = model_ann.predict(X_train)
 y_pred_test = model_ann.predict(X_test)
@@ -570,36 +313,6 @@ plt.axvline(0,color = 'red')
 plt.title('Residual Distribution')
 plt.show()
 
-"""- Normally Distributed Residuals - The histogram and KDE plot show a bell-shaped curve, indicating that residuals are approximately normally distributed.
-- Centered Around Zero - The red vertical line at zero suggests that the model has low bias, as the residuals are symmetrically distributed around zero.
-- No Major Skewness - The distribution is balanced, meaning no major over-prediction or under-prediction trends.
-- Low Residual Variability - Most residuals are within a narrow range, indicating good model performance with minimal errors.
-- **Conclusion: The ANN model is well-fitted, showing low bias and normally distributed residuals, making it reliable for predictions. 🚀**
-"""
-
-# Q-Q Plot for Normality Check
-plt.figure(figsize=(6,5))
-stats.probplot(residuals, dist="norm", plot=plt)
-plt.title("Q-Q Plot of Residuals")
-plt.show()
-
-# Residuals vs. Fitted Plot
-plt.figure(figsize=(6,5))
-plt.scatter(y_pred_test, residuals, alpha=0.5)
-plt.axhline(y=0, color='r', linestyle='--')
-plt.xlabel("Fitted Values (Predicted)")
-plt.ylabel("Residuals")
-plt.title("Residuals vs Fitted Values - ANN")
-plt.show()
-
-"""- No Clear Pattern - Residuals are randomly scattered around the red dashed line (zero), suggesting that the model captures the relationship well and there is no major systematic error.
-- Homoscedasticity (Constant Variance) - The spread of residuals appears relatively uniform across different predicted values, indicating that heteroscedasticity is not a major issue.
-- Some Outliers - A few residuals are noticeably large, suggesting some instances where predictions deviate significantly from actual values.
-- Good Model Fit - Since there is no strong trend, the ANN model appears to be making unbiased predictions.
-- **Conclusion: The ANN model performs well with no major bias or heteroscedasticity issues, but further fine-tuning may help address the few large residuals. 🚀**
-
-# Save Trained model and preprocessor
-"""
 
 import joblib
 
