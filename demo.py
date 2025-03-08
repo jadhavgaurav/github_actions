@@ -52,7 +52,7 @@ df['water_cement_ratio'] = df['water'] / df['cement']
 
 df['strength_age_ratio'] = df['concrete_compressive_strength'] / df['age']
 
-df.drop(columns=['water', 'coarse_aggregate', 'fine_aggregate'], inplace=True)
+df.drop(columns=['water', 'coarse_aggregate', 'fine_aggregate '], inplace=True)
 
 # Outlier Detection using IQR method
 Q1 = df.quantile(0.25)
